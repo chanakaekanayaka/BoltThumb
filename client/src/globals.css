@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-poppins: "Poppins", sans-serif;
+  /* Custom Brand Palette */
+  --color-brand-maroon: #881337;   /* Rose-900 */
+  --color-brand-accent: #e11d48;   /* Rose-600 */
+  --color-brand-glow: #fb7185;     /* Rose-400 */
+}
+
+body {
+  /* Ultra-dark background for better contrast */
+  @apply bg-[#030303] text-slate-300 text-sm antialiased font-poppins selection:bg-rose-600 selection:text-white;
+}
+
+button {
+  @apply cursor-pointer transition-all duration-300 active:scale-95;
+}
+
+/* Enhanced Gradient: Maroon to Bright Rose to Maroon */
+.move-gradient {
+  background-image: linear-gradient(
+    to right, 
+    #881337, 
+    #fb7185, 
+    #e11d48, 
+    #881337
+  );
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: movegradient 6s ease infinite;
+}
+
+@keyframes movegradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Glassmorphism Effect for Cards */
+.glass-card {
+  @apply bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl;
+}
+
+/* Ambient Glow for BoltThumb effect */
+.bolt-glow {
+  box-shadow: 0 0 25px -5px rgba(225, 29, 72, 0.4);
+}
