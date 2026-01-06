@@ -5,6 +5,7 @@ import SoftBackdrop from '../components/SoftBackdrop';
 import AspectRatioSelector from '../components/AspectRatioSelector';
 import StyleSelector from '../components/StyleSelector';
 import ColorSchemeSelector from '../components/ColorSchemeSelector';
+import PreviewPannel from '../components/PreviewPannel';
 
 const Generate = () => {
 
@@ -97,7 +98,13 @@ const Generate = () => {
 
             </div>
             {/*RIGHT PANNEL*/}
-            <div></div>
+            <div>
+              <div>
+                <h2>Preview</h2>
+                <PreviewPannel thumbnail={thumbnail} isLoading={loading}
+                aspectRatio={aspectRatio}/>
+              </div>
+            </div>
           </div>
 
         </main>
