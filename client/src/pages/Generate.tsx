@@ -87,7 +87,7 @@ const Generate = () => {
                   font-medium bg-linear-to-b from-pink-500 to-pink-600 
                   hover:from-pink-700 disabled:crusor-not-allowed 
                   transition-colors'>
-                    {loading ? 'Generating...' : 'Generate Thumbnail'}
+                    {loading ? 'Generating...' : 'Generate Thumbnail'}1
 
                   </button>
                 )}
