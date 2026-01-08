@@ -119,7 +119,7 @@ export const generateThumbnail = async (req:Request, res:Response)=>{
              thumbnail.isGenerating = false;
              await thumbnail.save()
 
-             res.json({Message: 'Thumbnail Generated', thumbnail})
+             res.json({message: 'Thumbnail Generated', thumbnail})
 
              //remove image file from disk
              fs.unlinkSync(filePath)
