@@ -1,92 +1,87 @@
-'use client'
-import { MenuIcon, XIcon, ZapIcon } from "lucide-react";
+import { MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
+import { Link,useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
+    const {isLoggedIn, user, logout} = useAuth()
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
 
     return (
         <>
-            <motion.nav 
-                className="fixed top-0 z-50 flex items-center justify-between w-full py-5 px-6 md:px-16 lg:px-24 xl:px-32 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5"
+            <motion.nav className="fixed top-0 z-50 flex items-center justify-between 
+            w-full py-4 px-6 md:px-16 lg:px-24 xl:px-32 backdrop-blur"
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 250, damping: 30 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 250, damping: 70, mass: 1 }}
             >
-                {/* Logo Section */}
-                <Link to="/" className="group flex items-center gap-1 font-black tracking-tighter">
-                    <div className="bg-rose-700 text-white px-1.5 py-0.5 rounded-md skew-x-[-12deg] group-hover:bg-rose-600 transition-colors shadow-lg shadow-rose-900/20">
-                        <span className="inline-block skew-x-[12deg] text-2xl">BOLT</span>
-                    </div>
-                    <span className="text-2xl text-white tracking-tight ml-1">THUMB</span>
-                </Link>
+                <a href="https://prebuiltui.com?utm_source=pixels">
+                    <img className="h-8.5 w-auto" src="/assets/logo.svg" alt="logo" width={130} height={34} />
+                </a>
 
-                {/* Desktop Menu */}
-                <div className="hidden md:flex items-center gap-8 font-medium">
-                    {['Home', 'Generate', 'My-Generation', 'Contact'].map((item) => (
-                        <Link 
-                            key={item}
-                            to={item === 'Home' ? '/' : `/${item.toLowerCase()}`} 
-                            className="text-slate-400 hover:text-rose-500 transition-colors text-sm"
-                        >
-                            {item}
-                        </Link>
-                    ))}
+                <div className="hidden md:flex items-center gap-8 transition duration-500">
+
+                    <Link to='/' className="hover:text-pink-500 transition">Home</Link>
+                    <Link to='/generate' className="hover:text-pink-500 transition">Generate</Link>
+                    {isLoggedIn ?  <Link to='/my-generation' className="hover:text-pink-500 transition">MyGeneration</Link>
+                                :  <Link to='#' className="hover:text-pink-500 transition">About</Link>}
+                  
+                    <Link to='#' className="hover:text-pink-500 transition">Contact us</Link>
+
+                
                 </div>
+                <div className="flex items-center gap-2">
+                    {isLoggedIn ? (
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-4">
-                    <button 
-                        onClick={() => navigate('/login')} 
-                        className="hidden md:flex items-center gap-2 px-6 py-2.5 bg-rose-700 hover:bg-rose-600 text-white font-bold active:scale-95 transition-all rounded-full shadow-lg shadow-rose-900/20"
-                    >
-                        <ZapIcon size={16} fill="currentColor" />
-                        Get Started
-                    </button>
-                    
-                    <button onClick={() => setIsOpen(true)} className="md:hidden text-white">
-                        <MenuIcon size={28} />
-                    </button>
-                </div>
-            </motion.nav>
+                        <div className="relative group">
+                            <button className="rounded-full size-8 bg-white/20 border-2 border-white/10">
+                                {user?.name.charAt(0).toUpperCase()}
+                            </button>
+                            <div className="absolute hidden group-hover:block top-6 right-0 pt-4">
+                             <button onClick={()=>logout()} className="bg-white/20 border-2 border-white/10 px-5 py-1.5 rounded">
+                                Logout
+                             </button>
+                            </div>
 
-            {/* Mobile Fullscreen Menu */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div 
-                        initial={{ opacity: 0, x: '100%' }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: '100%' }}
-                        transition={{ type: "tween", duration: 0.4 }}
-                        className="fixed inset-0 z-[100] bg-[#030303] flex flex-col items-center justify-center gap-8"
-                    >
-                        <button 
-                            onClick={() => setIsOpen(false)} 
-                            className="absolute top-6 right-6 p-2 rounded-full bg-white/5 text-white"
-                        >
-                            <XIcon size={30} />
+                        </div>
+
+                    ) : (
+                        <button onClick={()=>navigate('/login')} className="hidden md:block px-6 
+                         py-2.5 bg-pink-600 hover:bg-pink-700 active:scale-95 transition-all rounded-full">
+                         Get Started
                         </button>
 
-                        {['Home', 'Generate', 'MyGeneration', 'Contact', 'Login'].map((item) => (
-                            <Link 
-                                key={item}
-                                onClick={() => setIsOpen(false)} 
-                                to={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
-                                className="text-3xl font-black text-white hover:text-rose-500 transition-colors tracking-tighter"
-                            >
-                                {item.toUpperCase()}
-                            </Link>
-                        ))}
-                        
-                        <div className="absolute bottom-12 text-slate-500 text-xs font-bold tracking-widest uppercase">
-                            BoltThumb AI &copy; 2026
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </div>
+
+                
+                <button onClick={() => setIsOpen(true)} className="md:hidden">
+                    <MenuIcon size={26} className="active:scale-90 transition" />
+                </button>
+            </motion.nav>
+
+            <div className={`fixed inset-0 z-100 bg-black/40 backdrop-blur flex flex-col 
+                items-center justify-center text-lg gap-8 md:hidden transition-transform 
+                duration-400 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+               <Link onClick={() => setIsOpen(false)} to='/'>Home</Link>
+               <Link onClick={() => setIsOpen(false)} to='/generate' >Generate</Link>
+               {isLoggedIn ? <Link onClick={() => setIsOpen(false)} to='/my-generation' >MyGeneration</Link>
+                           : <Link onClick={() => setIsOpen(false)} to='#' >About</Link>}
+                <Link onClick={() => setIsOpen(false)} to='#' >Contact us</Link>
+
+                {isLoggedIn ? <button onClick={() => {setIsOpen(false) ; logout()}} >Logout</button>
+                            :<Link onClick={() => setIsOpen(false)} to='/login' >Login</Link>}
+               
+              
+                <button onClick={() => setIsOpen(false)} className="active:ring-3 active:ring-white
+                 aspect-square size-10 p-1 items-center justify-center bg-pink-600 
+                  hover:bg-pink-700 transition text-white rounded-md flex">
+                    <XIcon />
+                </button>
+            </div>
         </>
     );
 }
