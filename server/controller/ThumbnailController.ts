@@ -131,10 +131,20 @@ export const deleteThumbnail = async (req: Request, res: Response) => {
         const { id } = req.params;
         const { userId } = req.session;
 
-        await Thumbnail.findByIdAndDelete({ _id: id, userId })
+        // Use findOneAndDelete to check both the thumbnail ID AND the owner ID
+        const deletedThumbnail = await Thumbnail.findOneAndDelete({ 
+            _id: id, 
+            userId: userId 
+        });
 
-        res.json({ message: 'Thumbnail deleted sucessfully' })
+        if (!deletedThumbnail) {
+            return res.status(404).json({ 
+                message: 'Thumbnail not found or you do not have permission to delete it' 
+            });
+        }
 
+        res.json({ message: 'Thumbnail deleted successfully' });
+        
     } catch (error: any) {
         console.log(error);
         res.status(500).json({ message: error.message });
