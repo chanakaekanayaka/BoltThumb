@@ -1,11 +1,15 @@
 import  { useEffect, useState } from 'react'
 import SoftBackdrop from '../components/SoftBackdrop'
-import { dummyThumbnails, type IThumbnail } from '../assets/assets'
+import { type IThumbnail } from '../assets/assets'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowUpRightIcon, DownloadIcon, TrashIcon } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import api from '../configs/api'
+import toast from 'react-hot-toast'
 
 const MyGeneration = () => {
 
+  const {isLoggedIn} = useAuth()
   const navigate = useNavigate();
 
   const aspectRatioClassMap : Record<string, string> ={
@@ -14,25 +18,52 @@ const MyGeneration = () => {
         '9:16': 'aspect-[9/16]',
   }
 
-  const [thumbanils, setThumbnails] = useState<IThumbnail[]>([])
+  const [thumbnails, setThumbnails] = useState<IThumbnail[]>([])
   const [loading, setLoading] = useState(false)
 
   const fetchThumbnails = async ()=>{
-    setThumbnails(dummyThumbnails as unknown as IThumbnail[])
+   try {
+    setLoading(true)
+    const {data} = await api.get('/api/user/thumbnails')
+    setThumbnails(data.thumbnails || [])
+    
+   } catch (error:any) {
+    console.log(error);
+    toast.error(error?.response?.data?.message || error.message)
+   }
+   finally{
     setLoading(false)
+   }
   }
 
   const handleDownload = (image_url:string)=>{
-    window.open(image_url, '_blank')
+        const link = document.createElement('a');
+        link.href = image_url.replace('/upload', '/upload/f1_attachment')
+        document.body.appendChild(link);
+        link.click()
+        link.remove()
   }
 
   const handleDelete = async (id:string)=>{
-    console.log(id)
+    try {
+      const confirm = window.confirm('Are you sure you want to delete this thumbnail?')
+      if(!confirm) return;
+      const {data} = await api.delete(`/api/thumbnail/delete/${id}`)
+      toast.success(data.message)
+      setThumbnails(thumbnails.filter((t)=>t._id ! == id));
+      
+    } catch (error:any) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || error.message)
+    }
   }
 
   useEffect(()=>{
+    if(isLoggedIn){
       fetchThumbnails()
-  },[])
+    }
+      
+  },[isLoggedIn])
 
   return (
     <>
@@ -60,22 +91,22 @@ const MyGeneration = () => {
       )}
 
       {/*Empty state*/}
-      {!loading && thumbanils.length === 0 &&(
+      {!loading && thumbnails.length === 0 &&(
         <div className='text-center py-24'>
           <h3 className='text-lg font-semibold text-zinc-200'>
             No thumbnails yet
           </h3>
           <p className='text-sm text-zinc-400 mt-2'>
-            Henerate your first thumbnail
+            GHenerate your first thumbnail
           </p>
 
         </div>
       )}
 
       {/*Grid*/}
-      {!loading && thumbanils.length >0 && (
+      {!loading && thumbnails.length >0 && (
         <div className='columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-8'>
-          {thumbanils.map((thumb: IThumbnail )=>{
+          {thumbnails.map((thumb: IThumbnail )=>{
             const aspectClass = aspectRatioClassMap[thumb.aspect_ratio || '16:9'];
 
             return(

@@ -10,7 +10,7 @@ const AspectRatioSelector = ({value, onChange}:{value:AspectRatio;
         '9:16' : <RectangleVertical className='size-6'/>,
     } as Record<AspectRatio, React.ReactNode>
   return (
-    <div className='space-y-3 dark'>
+    <div className='space-y-3 dark '>
       <label className='block text-sm font-medium'>
         Aspect Ratio
       </label>

@@ -18,18 +18,23 @@ export default function Navbar() {
                 viewport={{ once: true }}
                 transition={{ type: "spring", stiffness: 250, damping: 70, mass: 1 }}
             >
-                <a href="https://prebuiltui.com?utm_source=pixels">
-                    <img className="h-8.5 w-auto" src="/assets/logo.svg" alt="logo" width={130} height={34} />
-                </a>
+               
+                    <Link to="/" className="group flex items-center gap-1 font-black tracking-tighter">
+                        <div className="bg-rose-900 text-white px-1.5 py-0.5 rounded-md skew-x-[-12deg]">
+                            <span className="inline-block skew-x-[12deg] text-xl">BOLT</span>
+                        </div>
+                        <span className="text-xl text-white tracking-tight ml-1">THUMB</span>
+                    </Link>
+                
 
                 <div className="hidden md:flex items-center gap-8 transition duration-500">
 
-                    <Link to='/' className="hover:text-pink-500 transition">Home</Link>
-                    <Link to='/generate' className="hover:text-pink-500 transition">Generate</Link>
-                    {isLoggedIn ?  <Link to='/my-generation' className="hover:text-pink-500 transition">MyGeneration</Link>
-                                :  <Link to='#' className="hover:text-pink-500 transition">About</Link>}
+                    <Link to='/' className="hover:text-orange-600 transition hover:animate-bounce">Home</Link>
+                    <Link to='/generate' className="hover:text-orange-600  transition hover:animate-bounce">Generate</Link>
+                    {isLoggedIn ?  <Link to='/my-generation' className="hover:text-orange-600  transition hover:animate-bounce">MyGeneration</Link>
+                                :  <Link to='#' className="hover:text-orange-600  transition hover:animate-bounce">About</Link>}
                   
-                    <Link to='#' className="hover:text-pink-500 transition">Contact us</Link>
+                    <Link to='#' className="hover:text-orange-600 transition hover:animate-bounce">Contact us</Link>
 
                 
                 </div>

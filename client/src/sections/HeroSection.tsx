@@ -15,25 +15,10 @@ export default function HeroSection() {
             {/* Background Glow - Changed to Maroon/Rose */}
             <div className="absolute top-20 -z-10 left-1/2 -translate-x-1/2 size-96 bg-rose-900/20 blur-[120px] rounded-full"></div>
             
-            {/* Top Badge */}
-            <motion.a 
-                href="#pricing" 
-                className="group flex items-center gap-2 rounded-full p-1 pr-3 mt-32 text-rose-100 bg-rose-950/30 border border-rose-900/20"
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 320, damping: 25 }}
-            >
-                <span className="bg-rose-900 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">
-                    NEW
-                </span>
-                <p className="flex items-center gap-1 text-sm font-medium">
-                    <span>Try 10 free generations today</span>
-                    <ChevronRightIcon size={14} className="group-hover:translate-x-0.5 transition duration-300" />
-                </p>
-            </motion.a>
+           
 
             {/* Main Headline */}
-            <motion.h1 className="text-5xl md:text-7xl font-black max-w-4xl text-center mt-8 tracking-tighter text-rose-700"
+            <motion.h1 className="text-5xl md:text-7xl font-black max-w-4xl text-center mt-40 tracking-tighter text-rose-700"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 200, damping: 30 }}

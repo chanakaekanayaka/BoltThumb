@@ -15,7 +15,11 @@ const PreviewPannel = ({thumbnail, isLoading, aspectRatio}:
 
     const onDownload = ()=>{
         if(!thumbnail?.image_url) return;
-        window.open(thumbnail.image_url, '_blank')
+        const link = document.createElement('a');
+        link.href = thumbnail?.image_url.replace('/upload', '/upload/f1_attachment')
+        document.body.appendChild(link);
+        link.click()
+        link.remove()
     }
 
   return (
@@ -44,7 +48,7 @@ const PreviewPannel = ({thumbnail, isLoading, aspectRatio}:
                     className="h-full w-full object-cover"/>
 
                     <div className="absolute inset-0 flex items-end
-                    justify-center bg-black opacity-0 transition-opacity
+                    justify-center  opacity-0 transition-opacity
                     group-hover:opacity-100">
                         <button type="button" className="mb-6 flex items-center
                         gap-2 rounded-md px-5 py-2.5 text-xs font-medium transition 

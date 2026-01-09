@@ -45,7 +45,8 @@ const Login = () => {
 
                 <form
                     onSubmit={handleSubmit}
-                    className="w-full sm:w-87.5 text-center bg-white/6 border border-white/10 rounded-2xl px-8">
+                    className="w-full sm:w-87.5 text-center bg-white/6 border
+                     border-white/10 rounded-2xl px-8">
                     <h1 className="text-white text-3xl mt-10 font-medium">
                         {state === "login" ? "Login" : "Sign up"}
                     </h1>
@@ -67,9 +68,13 @@ const Login = () => {
                         </div>
                     )}
 
-                    <div className="flex items-center w-full mt-4 bg-white/5 ring-2 ring-white/10 focus-within:ring-rose-500/60 h-12 rounded-full overflow-hidden pl-6 gap-2 transition-all ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-white/75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /> <rect x="2" y="4" width="20" height="16" rx="2" /> </svg>
-                        <input type="email" name="email" placeholder="Email id" className="w-full bg-transparent text-white placeholder-white/60 border-none outline-none " value={formData.email} onChange={handleChange} required />
+                    <div className="flex items-center w-full mt-4 bg-white/5 ring-2 ring-white/10
+                     focus-within:ring-rose-500/60 h-12 rounded-full overflow-hidden pl-6 gap-2 transition-all ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" className="text-white/75" strokeWidth="2" 
+                         strokeLinecap="round" strokeLinejoin="round"> <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /> <rect x="2" y="4" width="20" height="16" rx="2" /> </svg>
+                        <input type="email" name="email" placeholder="Email id" className="w-full 
+                        bg-transparent text-white placeholder-white/60 border-none outline-none " value={formData.email} onChange={handleChange} required />
                     </div>
 
                     <div className=" flex items-center mt-4 w-full bg-white/5 ring-2 ring-white/10 focus-within:ring-rose-500/60 h-12 rounded-full overflow-hidden pl-6 gap-2 transition-all ">

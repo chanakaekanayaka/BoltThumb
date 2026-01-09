@@ -67,7 +67,7 @@ export default function TiltedImage({ rotateAmplitude = 5 }) {
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-10"></div>
                 
                 <motion.img 
-                    src="/assets/hero-section-showcase.png"
+                    src="/homeimg.jpg"
                     className="w-full rounded-[12px] display-block object-cover shadow-inner"
                     alt="BoltThumb Dashboard Preview"
                     style={{ transform: "translateZ(20px)" }} // Pops the image forward
