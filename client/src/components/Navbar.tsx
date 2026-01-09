@@ -54,8 +54,24 @@ export default function Navbar() {
                         </div>
 
                     ) : (
-                        <button onClick={()=>navigate('/login')} className="hidden md:block px-6 
-                         py-2.5 bg-pink-600 hover:bg-pink-700 active:scale-95 transition-all rounded-full">
+                        <button onClick={()=>navigate('/login')} className="/* Layout & Visibility */
+  hidden md:inline-flex items-center justify-center px-8 py-2.5 rounded-full
+  
+  /* Typography */
+  text-sm font-bold tracking-wide text-white
+  
+  /* Modern Orange Gradient - Shifting from Deep Orange to Amber */
+  bg-gradient-to-r from-orange-800 to-amber-600
+  hover:from-orange-700 hover:to-amber-200
+  
+  /* Shadow & Glow - Makes the button pop against dark backgrounds */
+  shadow-lg shadow-orange-950/20 
+  hover:shadow-orange-500/40
+  
+  /* Interaction & Feedback */
+  transition-all duration-300 ease-out
+  active:scale-95 
+  border border-white/10">
                          Get Started
                         </button>
 
@@ -82,8 +98,8 @@ export default function Navbar() {
                
               
                 <button onClick={() => setIsOpen(false)} className="active:ring-3 active:ring-white
-                 aspect-square size-10 p-1 items-center justify-center bg-pink-600 
-                  hover:bg-pink-700 transition text-white rounded-md flex">
+                 aspect-square size-10 p-1 items-center justify-center bg-orange-500 
+                  hover:bg-orange-700 transition text-white rounded-md flex">
                     <XIcon />
                 </button>
             </div>
