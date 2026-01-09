@@ -4,7 +4,7 @@ import { GenerateContentConfig, HarmBlockThreshold, HarmCategory } from "@google
 import ai from "../configs/ai.js";
 import path from "path";
 import fs from 'fs';
-import {v2 as cloudinary} from 'cloudinary'
+import { v2 as cloudinary } from 'cloudinary'
 
 const stylePrompts = {
     'Bold & Graphic': 'eye-catching thumbnail, bold typography, vibrant colors, expressive facial reaction, dramatic lighting, high contrast, click-worthy composition, professional style',
@@ -25,15 +25,12 @@ const colorSchemeDescriptions = {
     pastel: 'soft pastel colors, low saturation, gentle tones, calm and friendly aesthetic',
 }
 
-
-
-export const generateThumbnail = async (req:Request, res:Response)=>{
+export const generateThumbnail = async (req: Request, res: Response) => {
     try {
-        const {userId} = req.session;
-        const {title, prompt: user_prompt, style, aspect_ratio, color_scheme, text_overlay} = req.body;
+        const { userId } = req.session;
+        const { title, prompt: user_prompt, style, aspect_ratio, color_scheme, text_overlay } = req.body;
 
         const thumbnail = await Thumbnail.create({
-
             userId,
             title,
             prompt_used: user_prompt,
@@ -42,108 +39,104 @@ export const generateThumbnail = async (req:Request, res:Response)=>{
             aspect_ratio,
             color_scheme,
             text_overlay,
-            isGenerating:true
-
+            isGenerating: true
         })
 
         const model = 'gemini-3-pro-image-preview';
 
         const generationConfig: GenerateContentConfig = {
-
             maxOutputTokens: 32768,
             temperature: 1,
-            topP:0.95,
-            responseModalities:['IMAGE'],
-            imageConfig:{
-                aspectRatio:aspect_ratio || '16:9',
-                imageSize:'1K'
+            topP: 0.95,
+            responseModalities: ['IMAGE'],
+            imageConfig: {
+                aspectRatio: aspect_ratio || '16:9',
+                imageSize: '1K'
             },
-            safetySettings:[
-                {category:HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold:HarmBlockThreshold.OFF},
-                {category:HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold:HarmBlockThreshold.OFF},
-                {category:HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold:HarmBlockThreshold.OFF},
-                {category:HarmCategory.HARM_CATEGORY_HARASSMENT, threshold:HarmBlockThreshold.OFF}
+            safetySettings: [
+                { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.OFF },
+                { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.OFF },
+                { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.OFF },
+                { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.OFF }
             ]
-
         }
 
-            let prompt = `Create a ${stylePrompts[style as keyof typeof stylePrompts]}
+        let prompt = `Create a ${stylePrompts[style as keyof typeof stylePrompts]}
             for: "${title}"`;
 
-            if(color_scheme){
-                prompt += `Use a ${colorSchemeDescriptions[color_scheme as keyof typeof colorSchemeDescriptions]} color scheme.`
+        if (color_scheme) {
+            prompt += `Use a ${colorSchemeDescriptions[color_scheme as keyof typeof colorSchemeDescriptions]} color scheme.`
+        }
+
+        if (user_prompt) {
+            prompt += `Additional details: ${user_prompt}.`
+        }
+
+        prompt += `The thumbnail should be ${aspect_ratio}, visually stunning, and designed to maximize click-through rate.
+              ,ake it bold, professional, and impossible to ignore.`
+
+        //Generate the image using AI model
+        const response: any = await ai.models.generateContent({
+            model,
+            contents: [prompt],
+            config: generationConfig
+        })
+
+        //check if the response is valid
+        if (!response?.candidates?.[0]?.content?.parts) {
+            throw new Error('Unexpected response')
+        }
+
+        const parts = response.candidates[0].content.parts;
+
+        let finalBuffer: Buffer | null = null;
+
+        for (const part of parts) {
+            if (part.inlineData) {
+                finalBuffer = Buffer.from(part.inlineData.data, 'base64')
             }
+        }
 
-            if(user_prompt){
-                prompt += `Additional details: ${user_prompt}.`
-            }
+        if (!finalBuffer) {
+            throw new Error('Failed to extract image buffer from AI response');
+        }
 
-            prompt += `The thumbnail should be ${aspect_ratio}, visually stunning, and designed to maximize click-through rate.
-             ,ake it bold, professional, and impossible to ignore.`
-
-             //Generate the image using AI model
-             const response: any = await ai.models.generateContent({
-                model,
-                contents:[prompt],
-                config: generationConfig
-             })
-
-             //check if the response is valid
-             if(!response?.candidates?.[0]?.content?.parts){
-                throw new Error('Unexpected response')
-             }
-
-             const parts = response.candidates[0].content.parts;
-
-             let finalBuffer: Buffer | null = null;
-
-             for(const part of parts){
-                if(part.inlineData){
-                    finalBuffer = Buffer.from(part.inlineData.data, 'base64')
+        // --- FIXED: Uploading directly to Cloudinary without using the filesystem ---
+        const uploadResult: any = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { resource_type: 'image', folder: 'thumbnails' },
+                (error, result) => {
+                    if (error) return reject(error);
+                    resolve(result);
                 }
-             }
+            );
+            uploadStream.end(finalBuffer);
+        });
 
-             const filename = `final-output-${Date.now()}.png`;
-             const filePath = path.join('images', filename )
+        thumbnail.image_url = uploadResult.secure_url;
+        thumbnail.isGenerating = false;
+        await thumbnail.save()
 
-             //create the images directory it it doesn't exists
-             fs.mkdirSync('images', {recursive:true})
+        res.json({ message: 'Thumbnail Generated', thumbnail })
 
-             //write the final image to the file
-             fs.writeFileSync(filePath, finalBuffer!);
-
-             const uploadResult = await cloudinary.uploader.upload
-             (filePath, {resource_type:'image'})
-
-             thumbnail.image_url = uploadResult.url;
-             thumbnail.isGenerating = false;
-             await thumbnail.save()
-
-             res.json({message: 'Thumbnail Generated', thumbnail})
-
-             //remove image file from disk
-             fs.unlinkSync(filePath)
-
-             
-        
-    } catch (error:any) {
+    } catch (error: any) {
         console.log(error);
-        res.status(500).json({message: error.message});
+        res.status(500).json({ message: error.message });
     }
 }
 
 //delete thumbnail
-export const deleteThumbnail = async (req:Request, res:Response)=>{
+export const deleteThumbnail = async (req: Request, res: Response) => {
     try {
-        const {id} = req.params;
-        const {userId} = req.session;
+        const { id } = req.params;
+        const { userId } = req.session;
 
-        await Thumbnail.findByIdAndDelete({_id: id,userId})
+        await Thumbnail.findByIdAndDelete({ _id: id, userId })
 
-        res.json({message:'Thumbnail deleted sucessfully'})
-        
-    } catch (error:any) {
-         console.log(error);
-        res.status(500).json({message: error.message});
+        res.json({ message: 'Thumbnail deleted sucessfully' })
+
+    } catch (error: any) {
+        console.log(error);
+        res.status(500).json({ message: error.message });
     }
 }
